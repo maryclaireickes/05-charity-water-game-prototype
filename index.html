@@ -113,6 +113,10 @@
       color: #0077ff;
     }
 
+    .score-number {
+      color: #ffffff;
+    }
+
     #logo {
       width: 40px;
       margin-top: 20px;
@@ -132,8 +136,8 @@
     <button id="restart" onclick="restartGame()">Restart Game</button>
   </div>
   <div id="scoreboard">
-    <div>💧: <span id="scoreWater">0</span> of 3</div>
-    <div>X: <span id="scoreX">0</span> of 3</div>
+    <div>💧: <span id="scoreWater" class="score-number">0</span> of <span class="score-number">3</span></div>
+    <div>X: <span id="scoreX" class="score-number">0</span> of <span class="score-number">3</span></div>
   </div>
 
   <script>
