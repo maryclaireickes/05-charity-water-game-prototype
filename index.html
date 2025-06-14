@@ -1,13 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charity Water Game</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Every Drop Counts</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      /* Use the new water wave image as the background */
+      background: url('img/vecteezy_abstract-water-wave-vector-illustration-design-background_12827990.jpg') no-repeat bottom center;
+      background-size: cover;
+      background-color: #e0f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #0077ff;
+      font-weight: 700;
+      margin: 10px 0 0;
+    }
+
+    #subtitle {
+      color: #0077ff;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    #container {
+      background-color: white;
+      border: 4px solid #ffcc00;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    #message {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0077ff;
+      margin: 10px 0;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .cell {
+      background-color: transparent;
+      border: 3px solid #ffcc00;
+      border-radius: 8px;
+      font-size: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .cell:hover {
+      background-color: #fff8e1;
+    }
+
+    #fact {
+      background-color: #2196f3;
+      color: white;
+      padding: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      max-width: 300px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin: 10px auto;
+      font-size: 14px;
+    }
+
+    #restart {
+      background-color: #0077ff;
+      color: white;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #restart:hover {
+      background-color: #005fcc;
+    }
+
+    #scoreboard {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 20px;
+      font-weight: 600;
+      color: #0077ff;
+    }
+
+    #logo {
+      width: 40px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to the Charity Water Game Prototype</h1>
-    <script src="script.js"></script>
+  <!-- Add the charity: water logo to the header -->
+  <img src="/workspaces/05-charity-water-game-prototype/img/cw_logo_horizontal.png" alt="charity: water logo" style="width:180px; margin-bottom:10px;" />
+  <img id="logo" src="https://uploads-ssl.webflow.com/5c5b2ad5fc45266bde3c0a3d/5cb7194fa28c5f64f58b5f26_jerrycan-logo-yellow.svg" alt="charity: water logo" />
+  <h1>every drop counts</h1>
+  <div id="subtitle">get 3 in a row to win</div>
+  <div id="container">
+    <div id="message">💧's turn</div>
+    <div id="board"></div>
+    <div id="fact"></div>
+    <button id="restart" onclick="restartGame()">Restart Game</button>
+  </div>
+  <div id="scoreboard">
+    <div>💧: <span id="scoreWater">0</span> of 3</div>
+    <div>X: <span id="scoreX">0</span> of 3</div>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    const message = document.getElementById('message');
+    const fact = document.getElementById('fact');
+    const scoreWater = document.getElementById('scoreWater');
+    const scoreX = document.getElementById('scoreX');
+    const symbols = ['💧', '❌'];
+    let currentPlayer = 0;
+    let gameState = Array(9).fill(null);
+    let gameOver = false;
+    let scores = [0, 0];
+
+    const facts = [
+      "771 million people in the world live without clean water.",
+      "Diseases from dirty water kill more people every year than all forms of violence, including war.",
+      "In Africa alone, women spend 40 billion hours a year walking for water.",
+      "Access to clean water gives communities more time to grow food, earn an income, and go to school.",
+      "Every $1 invested in joint water supply and sanitation provides a $4.30 economic return."
+    ];
+
+    function getRandomFact() {
+      return facts[Math.floor(Math.random() * facts.length)];
+    }
+
+    function createBoard() {
+      board.innerHTML = '';
+      gameState = Array(9).fill(null);
+      gameOver = false;
+      message.textContent = `${symbols[currentPlayer]}'s turn`;
+      fact.textContent = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleClick);
+        board.appendChild(cell);
+      }
+    }
+
+    function handleClick(event) {
+      const index = event.target.dataset.index;
+      if (gameState[index] || gameOver) return;
+
+      gameState[index] = currentPlayer;
+      event.target.textContent = symbols[currentPlayer];
+
+      if (checkWin()) {
+        scores[currentPlayer]++;
+        updateScore();
+        message.textContent = `${symbols[currentPlayer]} won!`;
+        fact.textContent = getRandomFact();
+        gameOver = true;
+
+        if (scores[currentPlayer] === 3) {
+          message.textContent = `${symbols[currentPlayer]} wins the game! 💧 Mission accomplished!`;
+          fact.textContent += ' Visit charitywater.org to learn more.';
+        }
+
+      } else if (gameState.every(cell => cell !== null)) {
+        message.textContent = "It's a draw! Everyone deserves water.";
+        fact.textContent = getRandomFact();
+        gameOver = true;
+      } else {
+        currentPlayer = 1 - currentPlayer;
+        message.textContent = `${symbols[currentPlayer]}'s turn`;
+      }
+    }
+
+    function checkWin() {
+      const winCombos = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      return winCombos.some(combo => {
+        const [a, b, c] = combo;
+        return gameState[a] !== null &&
+               gameState[a] === gameState[b] &&
+               gameState[a] === gameState[c];
+      });
+    }
+
+    function updateScore() {
+      scoreWater.textContent = scores[0];
+      scoreX.textContent = scores[1];
+    }
+
+    function restartGame() {
+      if (scores[0] === 3 || scores[1] === 3) {
+        scores = [0, 0];
+        updateScore();
+      }
+      currentPlayer = 0;
+      createBoard();
+    }
+
+    createBoard();
+  </script>
 </body>
 </html>
