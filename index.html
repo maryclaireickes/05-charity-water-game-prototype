@@ -168,6 +168,7 @@
       board.innerHTML = '';
       gameState = Array(9).fill(null);
       gameOver = false;
+      currentPlayer = 0; // Always start with 💧
       message.textContent = `${symbols[currentPlayer]}'s turn`;
       fact.textContent = '';
       for (let i = 0; i < 9; i++) {
@@ -179,9 +180,31 @@
       }
     }
 
+    // This function lets the computer (X) pick a random empty cell
+    function computerMove() {
+      // Find all empty cells
+      const emptyIndexes = [];
+      for (let i = 0; i < gameState.length; i++) {
+        if (gameState[i] === null) {
+          emptyIndexes.push(i);
+        }
+      }
+      // If there are no empty cells, do nothing
+      if (emptyIndexes.length === 0) {
+        return;
+      }
+      // Pick a random empty cell
+      const randomIndex = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+      gameState[randomIndex] = 1; // 1 means X
+      // Update the board visually
+      const cellDivs = document.querySelectorAll('.cell');
+      cellDivs[randomIndex].textContent = symbols[1];
+    }
+
     function handleClick(event) {
       const index = event.target.dataset.index;
-      if (gameState[index] || gameOver) return;
+      // Only allow player (💧) to click and only if cell is empty and game is not over
+      if (gameState[index] || gameOver || currentPlayer !== 0) return;
 
       gameState[index] = currentPlayer;
       event.target.textContent = symbols[currentPlayer];
@@ -203,8 +226,41 @@
         fact.textContent = getRandomFact();
         gameOver = true;
       } else {
-        currentPlayer = 1 - currentPlayer;
+        // Switch to computer (X)
+        currentPlayer = 1;
         message.textContent = `${symbols[currentPlayer]}'s turn`;
+
+        // Let the computer (X) make a move after a short delay
+        setTimeout(() => {
+          computerMove();
+
+          // Check if computer won
+          if (checkWin()) {
+            scores[1]++;
+            updateScore();
+            message.textContent = `${symbols[1]} won!`;
+            fact.textContent = getRandomFact();
+            gameOver = true;
+
+            if (scores[1] === 3) {
+              message.textContent = `${symbols[1]} wins the game! 💧 Mission accomplished!`;
+              fact.textContent += ' Visit charitywater.org to learn more.';
+            }
+            return;
+          }
+
+          // Check for draw after computer move
+          if (gameState.every(cell => cell !== null)) {
+            message.textContent = "It's a draw! Everyone deserves water.";
+            fact.textContent = getRandomFact();
+            gameOver = true;
+            return;
+          }
+
+          // Switch back to player (💧)
+          currentPlayer = 0;
+          message.textContent = `${symbols[currentPlayer]}'s turn`;
+        }, 500); // 500ms delay so students can see the move
       }
     }
 
@@ -232,7 +288,6 @@
         scores = [0, 0];
         updateScore();
       }
-      currentPlayer = 0;
       createBoard();
     }
 
