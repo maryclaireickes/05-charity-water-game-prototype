@@ -15,7 +15,7 @@ const facts = [
   "Diseases from dirty water kill more people every year than all forms of violence, including war.",
   "In Africa alone, women spend 40 billion hours a year walking for water.",
   "Access to clean water gives communities more time to grow food, earn an income, and go to school.",
-  "Every $1 invested in joint water supply and sanitation provides a $4.30 economic return."
+  "Every $1 invested in joint water supply and sanitation provides a $4.30 economic return." 
 ];
 
 function getRandomFact() {

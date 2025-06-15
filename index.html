@@ -21,13 +21,13 @@
     }
 
     h1 {
-      color: #0077ff;
+      color: #003366;
       font-weight: 700;
       margin: 10px 0 0;
     }
 
     #subtitle {
-      color: #0077ff;
+      color: #003366;
       font-size: 14px;
       margin-bottom: 10px;
     }
@@ -47,7 +47,7 @@
     #message {
       font-size: 20px;
       font-weight: bold;
-      color: #0077ff;
+      color: #003366;
       margin: 10px 0;
     }
 
@@ -55,68 +55,71 @@
       display: grid;
       grid-template-columns: repeat(3, 80px);
       grid-template-rows: repeat(3, 80px);
-      gap: 10px;
+      gap: 0; /* Remove gap so borders touch */
       justify-content: center;
-      margin: 20px 0;
+      align-items: center;
+      margin: 20px auto;
+      width: 240px;  /* 3*80px */
+      height: 240px; /* 3*80px */
+      position: relative;
     }
 
     .cell {
       background-color: transparent;
-      border: 3px solid #ffcc00;
-      border-radius: 8px;
+      border: 2px solid #ffcc00;
+      border-radius: 0;
       font-size: 2em;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      /* Make sure each cell is a perfect square */
+      width: 80px;
+      height: 80px;
+      box-sizing: border-box;
     }
 
-    .cell:hover {
-      background-color: #fff8e1;
-    }
+    /* Add thick borders for the grid lines to look like a tic-tac-toe board */
+    .cell:nth-child(-n+3) { border-top: none; }
+    .cell:nth-child(n+7) { border-bottom: none; }
+    .cell:nth-child(3n+1) { border-left: none; }
+    .cell:nth-child(3n) { border-right: none; }
 
     #fact {
-      background-color: #2196f3;
+      background-color: #003366cb;
       color: white;
       padding: 16px;
       font-weight: 600;
       border-radius: 10px;
-      max-width: 300px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      margin: 10px auto;
       font-size: 14px;
       position: absolute;
-      left: 0;
-      right: 0;
-      /* Hide by default, show with .show-over-board */
+      left: 50%;
+      top: 50%; /* Center vertically in the container */
+      transform: translate(-50%, -50%); /* Center horizontally and vertically */
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s;
       z-index: 2;
-    }
-    #container {
-      /* ...existing code... */
-      position: relative; /* Needed for absolute positioning of #fact */
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: 0;
     }
     #fact.show-over-board {
-      /* Show and center over the board */
       opacity: 1;
       pointer-events: auto;
-      top: 70px; /* Adjust as needed to center over the board */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 320px;
-      margin: 0 auto;
-      z-index: 2;
     }
     .hidden {
       display: none;
     }
 
     #restart {
-      background-color: #0077ff;
+      background-color: #003366;
       color: white;
       padding: 12px 20px;
       font-size: 16px;
@@ -128,19 +131,28 @@
     }
 
     #restart:hover {
-      background-color: #005fcc;
+      background-color: #003366;
     }
 
+    #scoreboard-container {
+      background: #003366; /* blue with some transparency */
+      border-radius: 10px;
+      padding: 12px 0;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: center;
+    }
     #scoreboard {
       display: flex;
       justify-content: space-around;
       width: 100%;
       max-width: 300px;
-      margin-top: 20px;
       font-weight: 600;
-      color: #0077ff;
+      color: #fff;
     }
-
     .score-number {
       color: #ffffff;
     }
@@ -163,9 +175,12 @@
     <div id="board"></div>
     <button id="restart" onclick="restartGame()">Restart Game</button>
   </div>
-  <div id="scoreboard">
-    <div>💧: <span id="scoreWater" class="score-number">0</span> of <span class="score-number">3</span></div>
-    <div>X: <span id="scoreX" class="score-number">0</span> of <span class="score-number">3</span></div>
+  <!-- Add a container around the scoreboard for better styling -->
+  <div id="scoreboard-container">
+    <div id="scoreboard">
+      <div>💧: <span id="scoreWater" class="score-number">0</span> of <span class="score-number">3</span></div>
+      <div>X: <span id="scoreX" class="score-number">0</span> of <span class="score-number">3</span></div>
+    </div>
   </div>
 
   <script>
@@ -337,4 +352,5 @@
   </script>
 </body>
 </html>
+</body>
 </html>

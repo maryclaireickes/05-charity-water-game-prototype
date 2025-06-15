@@ -25,7 +25,7 @@ body {
 }
 
 h1 {
-  color: #00796b;
+  color: #003366;
 }
 
 #board {
@@ -37,7 +37,7 @@ h1 {
 }
 
 .cell {
-  background-color: #b2dfdb;
+  background-color: #003366;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +53,7 @@ h1 {
 
 #message, #fact {
   font-size: 1.2em;
-  color: #004d40;
+  color: #003366;
   margin-bottom: 10px;
   text-align: center;
 }
@@ -61,7 +61,7 @@ h1 {
 #restart {
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #00796b;
+  background-color: #003366;
   color: white;
   border: none;
   border-radius: 5px;
